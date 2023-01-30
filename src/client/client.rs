@@ -2,7 +2,7 @@ use crate::client::client::RequestError::ErrorResponce;
 use crate::client::shiki_types::{UserRateResponse, UserRatesParams, WhoAmIResponce};
 
 use crate::client::limitter::Limiter;
-use crate::shiki_types::AnimeId;
+use crate::shiki_types::{AnimeId, UserMessagesParams};
 use async_lock::RwLock;
 use oauth2::basic::BasicTokenResponse;
 use oauth2::TokenResponse;
@@ -64,9 +64,9 @@ async fn get_request<R: DeserializeOwned>(
     uri: &str,
     client: &ShikiClient,
 ) -> Result<R, RequestError> {
-    let url = BASE_URL.to_string() + uri;
+    let url = format!("{}{}", BASE_URL, uri);
     let access_token = { client.access_token.read().await.clone() };
-    let auth = "Bearer ".to_string() + access_token.as_str();
+    let auth = format!("Bearer {}", access_token);
 
     client.limiter.wait_slot().await;
 
@@ -100,8 +100,13 @@ impl ShikiClient {
         params: T,
     ) -> ClientResult<UserRateResponse> {
         let params = serde_qs::to_string(&params.into()).unwrap();
-        let uri = "/v2/user_rates?".to_string() + params.as_str();
+        let uri = format!("/v2/user_rates?{}", params);
         get_request(uri.as_str(), self).await
+    }
+
+    pub async fn user_messages(&self, params: UserMessagesParams) {
+        let q_params = serde_qs::to_string(&params).unwrap();
+        let uri = format!("/api/users/{}/messages?{}", params.user_id, q_params);
     }
 
     pub async fn anime(&self, anime_id: AnimeId) {
