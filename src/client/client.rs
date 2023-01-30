@@ -2,7 +2,7 @@ use crate::client::client::RequestError::ErrorResponce;
 use crate::client::shiki_types::{UserRateResponse, UserRatesParams, WhoAmIResponce};
 
 use crate::client::limitter::Limiter;
-use crate::shiki_types::{AnimeId, UserMessagesParams};
+use crate::shiki_types::{AnimeId, UserMessageResponce, UserMessagesParams};
 use async_lock::RwLock;
 use oauth2::basic::BasicTokenResponse;
 use oauth2::TokenResponse;
@@ -104,9 +104,13 @@ impl ShikiClient {
         get_request(uri.as_str(), self).await
     }
 
-    pub async fn user_messages(&self, params: UserMessagesParams) {
+    pub async fn user_messages(
+        &self,
+        params: UserMessagesParams,
+    ) -> ClientResult<UserMessageResponce> {
         let q_params = serde_qs::to_string(&params).unwrap();
         let uri = format!("/api/users/{}/messages?{}", params.user_id, q_params);
+        get_request(uri.as_str(), self).await
     }
 
     pub async fn anime(&self, anime_id: AnimeId) {
