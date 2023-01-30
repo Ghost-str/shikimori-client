@@ -1,0 +1,21 @@
+[package]
+name = "shiki-client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "shiki_client"
+path = "src/lib.rs"
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_qs = "0.11"
+chrono = { version = "0.4", features = ["serde"] }
+oauth2 = "4.3.0"
+open = "3.2.0"
+thiserror = "1.0.38"
+async-lock = "2.6.0"
+tokio = "1.24.2"
